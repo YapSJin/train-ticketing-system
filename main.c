@@ -47,7 +47,7 @@ void staffLogin();
 void recoverPass();
 
 void memberMenu();
-void ViewMembers();
+void viewMembers();
 void deleteMember();
 
 void staffMenu();
