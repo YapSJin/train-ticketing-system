@@ -40,7 +40,7 @@ typedef struct {
 void member();
 void newMember();
 void memberLogin();
-void memberInfo(User);
+void memberInfo(User*);
 
 void buyTicket(char);
 void viewTickets(User);
@@ -143,6 +143,7 @@ void member() {
                 break;
             case 2:
                 newMember();
+                system("pause");
                 break;
             case 3:
                 break;
@@ -389,7 +390,7 @@ void memberLogin() {
 
             switch (choice) {
                 case 1:
-                    memberInfo(currentUser);
+                    memberInfo(&currentUser);
                     system("pause");
                     break;
                 case 2:
@@ -415,14 +416,17 @@ void memberLogin() {
     fclose(file);
 }
 
-void memberInfo(User currentUser) {
+void memberInfo(User* currentUser) {
     char choice;
+    User updatedUser;
+    FILE* file = openFile("user.bin", "rb+");
+
     printf("\nUser Information\n");
     printf("==========================\n");
-    printf("Name: %s\n", currentUser.username);
-    printf("Gender: %c\n", currentUser.gender);
-    printf("IC: %s\n", currentUser.ic_num);
-    printf("Contact: %s\n", currentUser.phoneNo);
+    printf("Name: %s\n", currentUser->username);
+    printf("Gender: %c\n", currentUser->gender);
+    printf("IC: %s\n", currentUser->ic_num);
+    printf("Contact: %s\n", currentUser->phoneNo);
     printf("==========================\n\n");
 
     printf("Edit User Information (y/n)? ");
@@ -430,9 +434,7 @@ void memberInfo(User currentUser) {
     choice = toupper(getchar());
 
     if (choice == 'Y') {
-        FILE* file = openFile("user.bin", "rb+");
-
-        User updatedUser = currentUser;
+        updatedUser = *currentUser;
 
         printf("Enter new gender (M/F): ");
         rewind(stdin);
@@ -461,7 +463,7 @@ void memberInfo(User currentUser) {
         printf("Contact: %s\n", updatedUser.phoneNo);
         printf("=====================================\n\n");
 
-        system("pause");
+        *currentUser = updatedUser;
     }
 }
 
