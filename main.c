@@ -164,6 +164,7 @@ void staff() {
                 break;
             case 2:
                 recoverPass();
+                system("pause");
                 break;
             case 3:
                 break;
