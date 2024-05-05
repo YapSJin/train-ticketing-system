@@ -44,10 +44,10 @@ void cancelTicket(char);
 // Staff Functions
 void staff();
 void staffLogin();
-void recoveryPass();
+void recoverPass();
 
 void memberMenu();
-void displayMembers();
+void ViewMembers();
 void deleteMember();
 
 void staffMenu();
@@ -720,7 +720,7 @@ void memberMenu() {
                 system("pause");
                 break;
             case 2:
-                deleteMembers();
+                deleteMember();
                 break;
             case 3:
                 break;
@@ -744,7 +744,7 @@ void viewMembers() {
     fclose(file);
 }
 
-void deleteMembers() {
+void deleteMember() {
     char prompt;
     do {
         User member[50];
