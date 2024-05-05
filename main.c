@@ -448,7 +448,7 @@ void memberInfo(User* currentUser) {
         rewind(stdin);
         scanf("%s", updatedUser.phoneNo);
 
-        fseek(file, -sizeof(User), SEEK_CUR);
+        fseek(file, -(long)sizeof(User), SEEK_CUR);
 
         fwrite(&updatedUser, sizeof(User), 1, file);
         printf("\nUser information updated successfully.\n");
