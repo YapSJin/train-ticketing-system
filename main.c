@@ -42,10 +42,10 @@ void newMember();
 void memberLogin();
 void memberInfo(User*);
 
-void buyTicket(char);
-void viewTickets(User);
-void changeTicket(char);
-void cancelTicket(char);
+void buyTicket(char memberID[7]);
+void viewTickets(char memberID[7]);
+void changeTicket(char memberID[7]);
+void cancelTicket(char memberID[7]);
 
 // Staff Functions
 void staff();
@@ -83,7 +83,7 @@ void memberHeader();
 void ticketsHeader();
 void displayTickets();
 void memberTicketHeader();
-void memberTickets(char, int);
+void memberTickets(char memberID[7], int);
 
 void main() {
     int choice;
@@ -398,7 +398,7 @@ void memberLogin() {
                     system("pause");
                     break;
                 case 3:
-                    viewTickets(currentUser);
+                    viewTickets(currentUser.ID);
                     system("pause");
                     break;
                 case 4:
@@ -467,7 +467,7 @@ void memberInfo(User* currentUser) {
     }
 }
 
-void buyTicket(char memberID) {
+void buyTicket(char memberID[7]) {
     struct Ticket ticket[SIZE];
     MemberTickets memberTicket;
 
@@ -525,12 +525,14 @@ void buyTicket(char memberID) {
 
                 strcpy(memberTicket.bookingDate, date);
 
+                printf("\n");
+
                 for (int i = 0; i < memberTicket.quantity; i++) {
                     char coach;
                     int seat;
 
                     do {
-                        printf("\nEnter desired seat for ticket %d (coach: A-F, seat: 1-48) eg. A14: ", i + 1);
+                        printf("Enter desired seat for ticket %d (coach: A-F, seat: 1-48) eg. A14: ", i + 1);
                         rewind(stdin);
                         scanf("%c%d", &coach, &seat);
 
@@ -542,7 +544,7 @@ void buyTicket(char memberID) {
 
                 strcpy(memberTicket.status, "Booked");
 
-                fprintf(ptrWrite, "%s|%s|%s|%s|%s|%s|", memberID, memberTicket.bookingID, memberTicket.ticket.destination, memberTicket.ticket.trainID, memberTicket.ticket.departureDate, memberTicket.ticket.departureTime, memberTicket.bookingDate);
+                fprintf(ptrWrite, "%s|%s|%s|%s|%s|%s|%s|", memberID, memberTicket.bookingID, memberTicket.ticket.destination, memberTicket.ticket.trainID, memberTicket.ticket.departureDate, memberTicket.ticket.departureTime, memberTicket.bookingDate);
 
                 for (int i = 0; i < memberTicket.quantity; i++) {
                     fprintf(ptrWrite, "%s", memberTicket.seats[i]);
@@ -553,17 +555,17 @@ void buyTicket(char memberID) {
 
                 fprintf(ptrWrite, "|%d|%.2lf|%s\n", memberTicket.quantity, memberTicket.total, memberTicket.status);
 
-                printf("Booking Successful!\n");
+                printf("\nBooking Successful!\n");
                 fclose(ptrWrite);
             }
         }
     }
 }
 
-void viewTickets(User currentUser) {
+void viewTickets(char memberID[7]) {
     int choice;
     do {
-        memberTickets(currentUser.ID, 1);
+        memberTickets(memberID, 1);
 
         printf("\nWhat would you like to do? \n\n");
         printf("1. Change Time\n2. Cancel Ticket\n3. Back\n\n");
@@ -574,10 +576,10 @@ void viewTickets(User currentUser) {
 
         switch (choice) {
             case 1:
-                changeTicket(currentUser.ID);
+                changeTicket(memberID);
                 break;
             case 2:
-                cancelTicket(currentUser.ID);
+                cancelTicket(memberID);
                 break;
             case 3:
                 break;
@@ -589,7 +591,7 @@ void viewTickets(User currentUser) {
     } while (choice != 3);
 }
 
-void changeTicket(char memberID) {
+void changeTicket(char memberID[7]) {
     struct Ticket ticket[SIZE];
     MemberTickets memberTicket[SIZE];
     int found = 0, count = 0, id = 0;
@@ -664,7 +666,7 @@ void changeTicket(char memberID) {
     }
 }
 
-void cancelTicket(char memberID) {
+void cancelTicket(char memberID[7]) {
     MemberTickets memberTicket[SIZE];
     int count = 0, found = 0;
     char bookingID[6];
@@ -685,7 +687,7 @@ void cancelTicket(char memberID) {
     for (int i = 0; i < count; i++) {
         if (strcmp(memberTicket[i].bookingID, bookingID) == 0) {
             if (strcmp(memberTicket[i].status, "Cancelled") != 0) {
-                memberHeader();
+                memberTicketHeader();
 
                 printf("%-15s %-15s %-10s %-15s %-15s %-15s %-15s %-10.2lf %s\n", memberTicket[i].bookingID, memberTicket[i].ticket.destination, memberTicket[i].ticket.trainID, memberTicket[i].seats, memberTicket[i].ticket.departureDate, memberTicket[i].ticket.departureTime, memberTicket[i].bookingDate, memberTicket[i].total, memberTicket[i].status);
 
@@ -1349,14 +1351,14 @@ void searchTicket() {
 
     printf("\nEnter keyword to search: ");
     rewind(stdin);
-    strlwr(gets(keyword));
+    gets(keyword);
 
     FILE* ptrSearch = openFile("tickets.txt", "r");
 
     ticketsHeader();
     while (fscanf(ptrSearch, "%[^|]|%[^|]|%[^|]|%[^|]|%lf\n", &ticket.destination, &ticket.trainID, &ticket.departureDate, &ticket.departureTime, &ticket.price) != EOF) {
         strcpy(destination, ticket.destination);
-        if (strcmp(strlwr(destination), keyword) == 0) {
+        if (strcmp(strlwr(destination), strlwr(keyword)) == 0) {
             printf("%-3d %-15s %-10s %-15s %-15s %.2lf\n", count++, ticket.destination, ticket.trainID, ticket.departureDate, ticket.departureTime, ticket.price);
             found = 1;
         }
@@ -1365,7 +1367,7 @@ void searchTicket() {
     if (!found) {
         printf("No results found!\n");
     } else {
-        printf("\n%d result(s) found.\n", count);
+        printf("\n%d result(s) found.\n", count - 1);
     }
     fclose(ptrSearch);
 }
@@ -1599,11 +1601,11 @@ void memberTicketHeader() {
     printf("==================================================================================================================================\n");
 }
 
-void memberTickets(char memberID, int showCancelled) {
+void memberTickets(char memberID[7], int showCancelled) {
     MemberTickets memberTicket;
     int found = 0;
 
-    memberHeader();
+    memberTicketHeader();
 
     FILE* ptrRead = openFile("memberTickets.txt", "r");
 
